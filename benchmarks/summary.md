@@ -23,6 +23,10 @@
 | CRYPTO003 | aes_ecb_mode           | 5/5 TP, 0 FP; severity 5×high | B305: 2/5 TP, 3 FN, 0 FP (ловит только PyCA, пропускает pycryptodome `MODE_ECB`) | 0/5 TP, 5 FN, 0 FP (правила про ECB в наборе нет) | не запускался (см. ниже) |
 | CRYPTO004 | bcrypt_low_rounds      | 4/4 TP, 0 FP; severity 2×high + 2×medium | 0/4 TP, 4 FN, 0 FP (числовых порогов на `rounds` нет) | 0/4 TP, 4 FN, 0 FP (правила про bcrypt `rounds` нет в наборе) | не запускался (см. ниже) |
 | CRYPTO005 | jwt_misuse             | 8/8 TP, 0 FP; severity 8×high | 0/8 TP, 8 FN, 0 FP (PyJWT не покрыт ни одним правилом Bandit) | 5/8 TP, 3 FN (`'NONE'` uppercase, `verify_aud`, `verify_exp`); 0 FP по теме, +2 шумовых `jwt-python-exposed-data` на любом `jwt.encode` (в т.ч. на safe.py) | не запускался (см. ниже) |
+| CRYPTO006 | non_constant_time_compare | 6/6 TP, 0 FP; severity 6×high | 0/6 TP, 6 FN, 0 FP (нет правила для timing-safe compare по именам) | 0/6 TP, 6 FN, 0 FP (нет правила для `==` / `!=` по crypto-именам) | не запускался (см. ниже) |
+| CRYPTO007 | hardcoded_jwt_secret   | 6/6 TP, 0 FP; severity 6×high | 0/6 TP, 6 FN, 0 FP (PyJWT signing key не покрыт) | 5/6 TP, 1 FN (`key="..."` kwarg); 0 FP по теме, +6 шумовых `jwt-python-exposed-data` на safe.py | не запускался (см. ниже) |
+| CRYPTO008 | tls_old_protocol_constant | 4/4 TP, 0 FP; severity 4×high | 0/4 TP, 4 FN, 0 FP (stdlib `ssl.SSLContext(ssl.PROTOCOL_*)` не покрыт) | 3/4 TP, 1 FN (`PROTOCOL_SSLv23`); 0 FP | не запускался (базовый кейс) |
+| CRYPTO009 | rsa_pkcs1v15_encryption | 4/4 TP, 0 FP; severity 4×high | 0/4 TP, 4 FN, 0 FP (нет правила для RSA PKCS#1 v1.5 encryption padding в PyCA) | 0/4 TP, 4 FN, 0 FP (нет правила для `PKCS1v15()` в контексте `encrypt`/`decrypt`) | не запускался (см. ниже) |
 
 ## Заметки по кейсам
 
@@ -86,8 +90,8 @@ Semgrep считается предварительным до повторно�
 
 CodeQL: не запускался. Кейс уже доказывает преимущество над двумя
 основными конкурентами без дополнительной статистики; CodeQL
-подключим на следующем продвинутом кейсе с потоковым анализом
-(например, CRYPTO006 — `static_iv_aes_cbc` / `hardcoded_aes_key`).
+подключим на отдельном будущем кейсе с потоковым анализом, например
+`static_iv_aes_cbc` или `hardcoded_aes_key`.
 Сырые JSON и подробности — в `corpus/pbkdf2_low_iterations/analogs.md`.
 
 ### CRYPTO003 / aes_ecb_mode
@@ -226,6 +230,140 @@ CodeQL: не запускался. Полный двойной пробел Band
 CodeQL: не запускался. Двойной пробел разной природы (Bandit —
 полный, Semgrep — семантический по dict-options и регистру) уже
 эмпирически доказан на двух основных конкурентах. CodeQL отложен до
-CRYPTO006 (`static_iv_aes_cbc` / `hardcoded_aes_key`), где полезен
-потоковый анализ.
+отдельного будущего кейса, где полезен потоковый анализ
+(`static_iv_aes_cbc` / `hardcoded_aes_key`).
 Сырые JSON и подробности — в `corpus/jwt_misuse/analogs.md`.
+
+### CRYPTO006 / non_constant_time_compare
+
+Класс кейса: **продвинутый**. Ось преимущества — **ось 1 + ось 4**:
+полный двойной пробел Bandit/Semgrep и контекст по именам переменных,
+аналогичный CRYPTO001, но применённый к сравнениям криптографических
+значений.
+
+Bandit 1.9.4 и Semgrep 1.161.0 с локальным open-source набором
+`semgrep-rules/python` пропустили все 6 сценариев: 0/6 TP, 6 FN,
+0 FP. Причина систематическая: оба инструмента не связывают обычные
+операторы `==` / `!=` с криптографическими именами вроде
+`expected_signature`, `provided_token`, `expected_mac`,
+`password_hash`, `digest`, `hmac_value`.
+
+Вклад нашего правила сверх аналогов на этом кейсе:
+
+1. AST-проверка простых `Compare`-узлов с одним оператором `==` или `!=`.
+2. Локальный набор чувствительных имён для сравнений: базовые crypto-имена
+   из `linter/context.py` плюс `signature`, `sig`, `mac`, `hmac`, `digest`,
+   `hash`, `password_hash`.
+3. Поддержка `ast.Name` и `ast.Attribute`, чтобы ловить как
+   `token == expected_token`, так и `self.signature == expected_signature`.
+4. Один уровень severity — `high`. Шкалы нет: обычное сравнение MAC,
+   HMAC, подписи, токена или password hash является прямым timing
+   side-channel риском (CWE-208).
+5. Suggestion указывает безопасную замену:
+   `hmac.compare_digest(a, b)` или `secrets.compare_digest(a, b)`,
+   для `!=` — `not compare_digest(...)`.
+
+Известные ограничения MVP: цепочки сравнений, результаты вызовов функций,
+dataflow через промежуточные переменные, subscripts/сложные выражения и
+кастомные wrappers поверх `compare_digest` не анализируются. Сегмент `mac`
+считается криптографическим Message Authentication Code; неоднозначные имена
+вроде `mac_address` вынесены за пределы текущего корпуса.
+
+CodeQL: не запускался. Полный двойной пробел двух основных конкурентов уже
+эмпирически доказан, а MVP-правило намеренно остаётся AST-only без dataflow.
+Сырые JSON и подробности — в
+`corpus/non_constant_time_compare/analogs.md`.
+
+### CRYPTO007 / hardcoded_jwt_secret
+
+Класс кейса: **продвинутый**. Ось преимущества — **ось 1 + ось 3**:
+полный пробел Bandit на PyJWT signing key и семантический пропуск Semgrep
+на kwarg-форме `key="..."`.
+
+Bandit 1.9.4 пропустил все 6 сценариев: 0/6 TP, 6 FN, 0 FP. Semgrep
+1.161.0 с локальным open-source набором `semgrep-rules/python` нашёл
+5/6 сценариев правилом `jwt-python-hardcoded-secret`, но пропустил
+`jwt.encode(payload, key="my-app-secret", algorithm="HS256")`. Дополнительно
+смежное правило `jwt-python-exposed-data` сработало на всех безопасных
+`jwt.encode` в `safe.py` — 6 шумовых предупреждений вне темы hardcoded secret.
+
+Вклад нашего правила сверх аналогов на этом кейсе:
+
+1. Поддержка обеих форм передачи signing key в PyJWT: второй позиционный
+   аргумент и keyword-аргумент `key=`.
+2. Alias-mapping как в CRYPTO005: `import jwt`, `import jwt as j`,
+   `from jwt import encode`, `from jwt import encode as e`.
+3. Строковые и bytes-литералы считаются уязвимыми независимо от длины:
+   проблема в хранении секрета в исходниках, а не только в энтропии.
+4. Один уровень severity — `high`. Если JWT-секрет попал в репозиторий,
+   атакующий может выпускать валидные токены после утечки секрета (CWE-798).
+5. Suggestion направляет к runtime-источникам секрета: environment,
+   secret manager/KMS или защищённая конфигурация.
+
+Известные ограничения MVP: переменная с литералом, f-string, конкатенация
+строк и dataflow через конфигурацию не анализируются. `settings.JWT_SECRET`
+считается безопасным или неизвестным. `jwt.decode(...)` и `algorithm="none"`
+не входят в это правило; последнее покрывает CRYPTO005.
+
+CodeQL: не запускался. Для текущего AST-only кейса достаточно подтверждённого
+пробела Bandit/Semgrep; CodeQL оставлен для будущих dataflow-проверок
+источника секрета.
+
+### CRYPTO008 / tls_old_protocol_constant
+
+Класс кейса: **базовый**. Semgrep 1.161.0 с локальным open-source набором
+`semgrep-rules/python` ловит 3 из 4 сценариев правилом `weak-ssl-version`:
+`PROTOCOL_TLSv1`, `PROTOCOL_TLSv1_1` и `PROTOCOL_SSLv3`. При этом он
+пропускает `PROTOCOL_SSLv23`. Bandit 1.9.4 полностью пропускает stdlib-форму
+`ssl.SSLContext(ssl.PROTOCOL_*)`: 0/4 TP.
+
+Вклад нашего правила сверх аналогов на этом кейсе:
+
+1. Покрытие legacy-констант TLS/SSL в одном AST-only правиле:
+   `PROTOCOL_TLSv1`, `PROTOCOL_TLSv1_1`, `PROTOCOL_SSLv23`,
+   `PROTOCOL_SSLv3`; в реализации также заложен `PROTOCOL_SSLv2`.
+2. Поддержка alias-mapping: `import ssl`, `import ssl as s`,
+   `from ssl import SSLContext, PROTOCOL_SSLv23`,
+   `from ssl import SSLContext as TLSContext, PROTOCOL_SSLv3 as SSL_V3`.
+3. Фокус на `SSLContext`: константа флагуется только как protocol-аргумент
+   конструктора `SSLContext`, а не по факту любого упоминания имени в файле.
+4. Один уровень severity — `high`, потому что выбор устаревшего протокола
+   напрямую ослабляет TLS-канал.
+
+Известные ограничения MVP: protocol-константа, переданная через переменную,
+wrapper-функции вокруг `SSLContext` и динамическая сборка аргументов не
+анализируются. Это намеренное ограничение AST-only правила без dataflow.
+
+CodeQL: не запускался. Кейс уже классифицируется по Bandit и Semgrep; CodeQL
+оставлен для будущих dataflow-проверок.
+Сырые JSON и подробности — в
+`corpus/tls_old_protocol_constant/analogs.md`.
+
+### CRYPTO009 / rsa_pkcs1v15_encryption
+
+Класс кейса: **продвинутый**. Ось преимущества — **ось 1**:
+полный двойной пробел Bandit/Semgrep на PyCA `cryptography` RSA
+encryption/decryption padding. Оба инструмента пропустили все 4 сценария:
+`public_key.encrypt(..., padding.PKCS1v15())`,
+`private_key.decrypt(..., padding.PKCS1v15())`, alias-import
+`asym_padding.PKCS1v15()` и direct import `PKCS1v15()`.
+
+Вклад нашего правила сверх аналогов на этом кейсе:
+
+1. Проверяет не сам факт вызова `PKCS1v15()`, а контекст RSA
+   `.encrypt(...)` / `.decrypt(...)`, поэтому не даёт FP на корректное
+   использование PKCS#1 v1.5 padding в RSA signatures.
+2. Поддерживает две формы импорта PyCA padding: модульный импорт
+   `from cryptography.hazmat.primitives.asymmetric import padding [as ...]`
+   и прямой импорт
+   `from cryptography.hazmat.primitives.asymmetric.padding import PKCS1v15`.
+3. Даёт один уровень severity — `high`: PKCS#1 v1.5 padding для RSA
+   encryption/decryption является прямым криптографическим нарушением;
+   безопасная альтернатива — RSA-OAEP с MGF1 и SHA-256.
+
+Известное ограничение MVP: padding, сохранённый в переменную
+(`pad = padding.PKCS1v15(); public_key.encrypt(message, pad)`), не
+флагуется. Это сознательное ограничение AST-only правила без dataflow.
+
+CodeQL: не запускался. Полный двойной пробел двух основных конкурентов
+зафиксирован в `corpus/rsa_pkcs1v15_encryption/analogs.md`.
