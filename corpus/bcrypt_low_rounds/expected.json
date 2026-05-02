@@ -1,0 +1,12 @@
+{
+  "case_id": "bcrypt_low_rounds",
+  "rule_id": "CRYPTO004",
+  "description": "bcrypt.gensalt(rounds=N) with cost factor below the project minimum. Values below 10 are high severity; 10-11 are medium.",
+  "must_be_empty_on_safe": true,
+  "findings": [
+    {"line": 11, "rule": "CRYPTO004", "severity": "high",   "context": "bcrypt.gensalt rounds=4"},
+    {"line": 16, "rule": "CRYPTO004", "severity": "high",   "context": "bcrypt alias gensalt rounds=8"},
+    {"line": 21, "rule": "CRYPTO004", "severity": "medium", "context": "from bcrypt import gensalt rounds=10"},
+    {"line": 26, "rule": "CRYPTO004", "severity": "medium", "context": "from bcrypt import gensalt as gs rounds=11"}
+  ]
+}

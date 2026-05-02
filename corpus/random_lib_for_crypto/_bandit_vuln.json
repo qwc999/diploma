@@ -1,0 +1,154 @@
+{
+  "errors": [],
+  "generated_at": "2026-04-27T14:31:37Z",
+  "metrics": {
+    ".\\corpus/random_lib_for_crypto/vulnerable.py": {
+      "CONFIDENCE.HIGH": 6,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 6,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 26,
+      "nosec": 0,
+      "skipped_tests": 0
+    },
+    "_totals": {
+      "CONFIDENCE.HIGH": 6,
+      "CONFIDENCE.LOW": 0,
+      "CONFIDENCE.MEDIUM": 0,
+      "CONFIDENCE.UNDEFINED": 0,
+      "SEVERITY.HIGH": 0,
+      "SEVERITY.LOW": 6,
+      "SEVERITY.MEDIUM": 0,
+      "SEVERITY.UNDEFINED": 0,
+      "loc": 26,
+      "nosec": 0,
+      "skipped_tests": 0
+    }
+  },
+  "results": [
+    {
+      "code": "16     # VULN: random.choice \u0434\u043b\u044f \u0442\u043e\u043a\u0435\u043d\u0430 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0438 (\u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442: token -> high)\n17     token = \"\".join(random.choice(ALPHABET) for _ in range(32))\n18     return token\n",
+      "col_offset": 20,
+      "end_col_offset": 43,
+      "filename": ".\\corpus/random_lib_for_crypto/vulnerable.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 17,
+      "line_range": [
+        17
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "22     # VULN: random.randint \u0434\u043b\u044f password-reset token (\u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442: reset_token -> high)\n23     reset_token = random.randint(10**15, 10**16 - 1)\n24     return reset_token\n",
+      "col_offset": 18,
+      "end_col_offset": 52,
+      "filename": ".\\corpus/random_lib_for_crypto/vulnerable.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 23,
+      "line_range": [
+        23
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "28     # VULN: random.randbytes \u0434\u043b\u044f IV \u0431\u043b\u043e\u0447\u043d\u043e\u0433\u043e \u0448\u0438\u0444\u0440\u0430 (\u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442: iv -> high)\n29     iv = random.randbytes(16)\n30     return iv\n",
+      "col_offset": 9,
+      "end_col_offset": 29,
+      "filename": ".\\corpus/random_lib_for_crypto/vulnerable.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 29,
+      "line_range": [
+        29
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "34     # VULN: from-import getrandbits + \u0438\u043c\u044f salt (\u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442: salt -> high)\n35     salt = getrandbits(128).to_bytes(16, \"big\")\n36     return salt\n",
+      "col_offset": 11,
+      "end_col_offset": 27,
+      "filename": ".\\corpus/random_lib_for_crypto/vulnerable.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 35,
+      "line_range": [
+        35
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "40     # VULN: alias `import random as rnd` + \u0438\u043c\u044f nonce (\u043a\u043e\u043d\u0442\u0435\u043a\u0441\u0442: nonce -> high)\n41     nonce = rnd.randbytes(12)\n42     return nonce\n",
+      "col_offset": 12,
+      "end_col_offset": 29,
+      "filename": ".\\corpus/random_lib_for_crypto/vulnerable.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 41,
+      "line_range": [
+        41
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    },
+    {
+      "code": "47     # \u043d\u0435\u0442 (\u0438\u043c\u044f \"greeting\" \u043d\u0435 \u0432 \u0441\u043b\u043e\u0432\u0430\u0440\u0435), \u043f\u043e\u044d\u0442\u043e\u043c\u0443 severity=medium.\n48     greeting = choice([\"hi\", \"hello\", \"hey\"])\n49     return greeting\n",
+      "col_offset": 15,
+      "end_col_offset": 45,
+      "filename": ".\\corpus/random_lib_for_crypto/vulnerable.py",
+      "issue_confidence": "HIGH",
+      "issue_cwe": {
+        "id": 330,
+        "link": "https://cwe.mitre.org/data/definitions/330.html"
+      },
+      "issue_severity": "LOW",
+      "issue_text": "Standard pseudo-random generators are not suitable for security/cryptographic purposes.",
+      "line_number": 48,
+      "line_range": [
+        48
+      ],
+      "more_info": "https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random",
+      "test_id": "B311",
+      "test_name": "blacklist"
+    }
+  ]
+}

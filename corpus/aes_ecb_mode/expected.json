@@ -1,0 +1,13 @@
+{
+  "case_id": "aes_ecb_mode",
+  "rule_id": "CRYPTO003",
+  "description": "AES в режиме ECB. Покрывает обе библиотеки (PyCA cryptography и pycryptodome) и пять форм вызова: PyCA modes.ECB(), PyCA прямой импорт ECB(), pycryptodome AES.MODE_ECB позиционно, pycryptodome mode=AES.MODE_ECB, импорт с алиасом.",
+  "must_be_empty_on_safe": true,
+  "findings": [
+    {"line": 34, "rule": "CRYPTO003", "severity": "high", "context": "PyCA Hazmat: Cipher(... modes.ECB() ...)"},
+    {"line": 41, "rule": "CRYPTO003", "severity": "high", "context": "PyCA Hazmat: Cipher(... ECB() ...) после прямого импорта"},
+    {"line": 48, "rule": "CRYPTO003", "severity": "high", "context": "pycryptodome: AES.new(key, AES.MODE_ECB) позиционно"},
+    {"line": 54, "rule": "CRYPTO003", "severity": "high", "context": "pycryptodome: AES.new(key, mode=AES.MODE_ECB) kwarg"},
+    {"line": 60, "rule": "CRYPTO003", "severity": "high", "context": "pycryptodome: A.new(key, A.MODE_ECB) с алиасом импорта"}
+  ]
+}

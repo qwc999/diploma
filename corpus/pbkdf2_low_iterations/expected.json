@@ -1,0 +1,16 @@
+{
+  "case_id": "pbkdf2_low_iterations",
+  "rule_id": "CRYPTO002",
+  "description": "PBKDF2 с числом итераций ниже OWASP-минимума (по фактическому hash-алгоритму). Покрывает обе формы: cryptography PBKDF2HMAC и hashlib.pbkdf2_hmac.",
+  "must_be_empty_on_safe": true,
+  "findings": [
+    {"line": 25, "rule": "CRYPTO002", "severity": "high",   "context": "PBKDF2HMAC SHA-256 iterations=100"},
+    {"line": 31, "rule": "CRYPTO002", "severity": "high",   "context": "PBKDF2HMAC SHA-256 iterations=1000"},
+    {"line": 37, "rule": "CRYPTO002", "severity": "high",   "context": "PBKDF2HMAC SHA-256 iterations=10_000"},
+    {"line": 43, "rule": "CRYPTO002", "severity": "medium", "context": "PBKDF2HMAC SHA-256 iterations=400_000 (между половиной и порогом)"},
+    {"line": 49, "rule": "CRYPTO002", "severity": "high",   "context": "PBKDF2HMAC SHA-512 iterations=50_000"},
+    {"line": 55, "rule": "CRYPTO002", "severity": "high",   "context": "hashlib.pbkdf2_hmac sha256 iterations=100 (4-й позиционный)"},
+    {"line": 60, "rule": "CRYPTO002", "severity": "high",   "context": "hashlib.pbkdf2_hmac sha1 iterations=100_000"},
+    {"line": 65, "rule": "CRYPTO002", "severity": "medium", "context": "pbkdf2_hmac sha512 iterations=150_000 (между половиной и порогом)"}
+  ]
+}

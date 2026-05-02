@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "cryptolint"
+version = "0.1.0"
+description = "Linter for detecting cryptographic misuses in Python backend code"
+authors = ["Alex <azhidenko13@gmail.com>"]
+packages = [{include = "linter"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+bandit = "^1.7"
+# semgrep: на Windows нативно не ставится, ставим отдельно через WSL/Docker на шаге прогона аналогов
+# semgrep = "^1.0"
+
+[tool.poetry.scripts]
+cryptolint = "linter.cli:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,17 @@
+Bandit:
+bandit corpus/random_lib_for_crypto/safe.py
+bandit corpus/random_lib_for_crypto/vulnerable.py
+
+bandit -f json -o corpus/random_lib_for_crypto/_bandit_vuln.json corpus/random_lib_for_crypto/vulnerable.py
+bandit -f json -o corpus/random_lib_for_crypto/_bandit_safe.json corpus/random_lib_for_crypto/safe.py
+
+
+Cryprolint:
+python -m linter corpus/random_lib_for_crypto/vulnerable.py
+python -m linter corpus/random_lib_for_crypto/safe.py
+
+python -m linter corpus/random_lib_for_crypto/
+
+Semgrep:
+wsl -- bash -lc 'export PATH=$HOME/.local/bin:$PATH; semgrep --metrics=off --config=/mnt/c/repos/semgrep-rules/python --json --output /mnt/c/repos/diploma/corpus/random_lib_for_crypto/_semgrep_vuln.json /mnt/c/repos/diploma/corpus/random_lib_for_crypto/vulnerable.py'
+wsl -- bash -lc 'export PATH=$HOME/.local/bin:$PATH; semgrep --metrics=off --config=/mnt/c/repos/semgrep-rules/python --json --output /mnt/c/repos/diploma/corpus/random_lib_for_crypto/_semgrep_safe.json /mnt/c/repos/diploma/corpus/random_lib_for_crypto/safe.py'

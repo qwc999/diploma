@@ -1,0 +1,16 @@
+{
+  "case_id": "jwt_misuse",
+  "rule_id": "CRYPTO005",
+  "description": "Опасные конфигурации при выпуске и проверке JWT: алгоритм 'none' (CWE-327, CWE-347) и отключение verify_*=False для подписи или claim-ов (CWE-347). Восемь сценариев: четыре с алгоритмом 'none' (encode kwarg lowercase/uppercase, 'none' в списке algorithms decode, через алиас импорта) и четыре с verify_*=False (verify_signature, verify_aud, verify_exp, два ключа в одном dict). Покрыты три формы импорта: `import jwt`, `from jwt import encode/decode`, `import jwt as j`.",
+  "must_be_empty_on_safe": true,
+  "findings": [
+    {"line": 30, "rule": "CRYPTO005", "severity": "high", "context": "encode с algorithm='none' (kwarg, через `import jwt`)"},
+    {"line": 35, "rule": "CRYPTO005", "severity": "high", "context": "encode с algorithm='NONE' (регистр, через `from jwt import encode`)"},
+    {"line": 40, "rule": "CRYPTO005", "severity": "high", "context": "decode с 'none' в algorithms (через `import jwt`)"},
+    {"line": 45, "rule": "CRYPTO005", "severity": "high", "context": "decode с 'none' в algorithms (через `import jwt as j`)"},
+    {"line": 50, "rule": "CRYPTO005", "severity": "high", "context": "decode с options={'verify_signature': False}"},
+    {"line": 55, "rule": "CRYPTO005", "severity": "high", "context": "decode с options={'verify_aud': False} (через `from jwt import decode`)"},
+    {"line": 62, "rule": "CRYPTO005", "severity": "high", "context": "decode с options={'verify_exp': False}"},
+    {"line": 69, "rule": "CRYPTO005", "severity": "high", "context": "decode с options={'verify_signature': False, 'verify_aud': False} — несколько ключей в одном dict, одно срабатывание"}
+  ]
+}

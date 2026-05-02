@@ -1,0 +1,14 @@
+{
+  "case_id": "random_lib_for_crypto",
+  "rule_id": "CRYPTO001",
+  "description": "Использование модуля random вместо secrets / os.urandom для криптографических целей.",
+  "must_be_empty_on_safe": true,
+  "findings": [
+    {"line": 17, "rule": "CRYPTO001", "severity": "high",   "context": "token"},
+    {"line": 23, "rule": "CRYPTO001", "severity": "high",   "context": "reset_token"},
+    {"line": 29, "rule": "CRYPTO001", "severity": "high",   "context": "iv"},
+    {"line": 35, "rule": "CRYPTO001", "severity": "high",   "context": "salt"},
+    {"line": 41, "rule": "CRYPTO001", "severity": "high",   "context": "nonce"},
+    {"line": 48, "rule": "CRYPTO001", "severity": "medium", "context": null}
+  ]
+}
