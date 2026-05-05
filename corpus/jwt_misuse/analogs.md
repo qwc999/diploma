@@ -24,7 +24,7 @@ wsl -e bash -lc 'export SEMGREP_ENABLE_VERSION_CHECK=0; export SEMGREP_SEND_METR
 
 Конфигурация запускалась оффлайн с локального клона `semgrep/semgrep-rules` @ `fdc73542dfd6ff4efd8a6710310a4ee5326db6d7` (директория `C:/repos/semgrep-rules`, ветка default, depth=1). Реестр `p/python` через `semgrep.dev` не прогонялся — на разведке (2026-04-25), на CRYPTO002 (2026-04-28) и на CRYPTO003 (2026-04-29) сохранялся ReadTimeoutError.
 
-CodeQL: не запускался. Двойной пробел двух основных конкурентов уже эмпирически доказан на этом кейсе (Bandit — полный, Semgrep — частичный, систематический по семантике dict-options и регистру алгоритма). CodeQL отложен до CRYPTO006 (`static_iv_aes_cbc` / `hardcoded_aes_key`), где полезен потоковый анализ.
+CodeQL: не запускался. Двойной пробел двух основных конкурентов уже эмпирически доказан на этом кейсе (Bandit — полный, Semgrep — частичный, систематический по семантике dict-options и регистру алгоритма). CodeQL отложен до отдельного будущего кейса с потоковым анализом (`static_iv_aes_cbc` / `hardcoded_aes_key`).
 
 Контекст: прогон проводился на полном корпусе из 8 сценариев в `vulnerable.py`. Каждый сценарий вынесен в отдельную функцию с префиксом `# VULN:` по шаблону `docs/rule_authoring.md`. Сценарии распределены по двум осям misuse (alg=none и verify_*=False) и трём формам импорта (`import jwt`, `from jwt import encode/decode`, `import jwt as j`).
 
