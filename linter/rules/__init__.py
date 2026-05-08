@@ -81,3 +81,7 @@ from linter.rules import pbkdf2_iterations as _pbkdf2_iterations  # noqa: E402, 
 from linter.rules import aes_ecb as _aes_ecb  # noqa: E402, F401
 from linter.rules import bcrypt_low_rounds as _bcrypt_low_rounds  # noqa: E402, F401
 from linter.rules import jwt_misuse as _jwt_misuse  # noqa: E402, F401
+from linter.rules import non_constant_time_compare as _non_constant_time_compare  # noqa: E402, F401
+from linter.rules import hardcoded_jwt_secret as _hardcoded_jwt_secret  # noqa: E402, F401
+from linter.rules import rsa_pkcs1v15_encryption as _rsa_pkcs1v15_encryption  # noqa: E402, F401
+from linter.rules import tls_old_protocol_constant as _tls_old_protocol_constant  # noqa: E402, F401
