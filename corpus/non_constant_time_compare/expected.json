@@ -1,0 +1,13 @@
+{
+  "case_id": "non_constant_time_compare",
+  "rule_id": "CRYPTO006",
+  "findings": [
+    {"line": 9, "rule": "CRYPTO006", "severity": "high"},
+    {"line": 14, "rule": "CRYPTO006", "severity": "high"},
+    {"line": 20, "rule": "CRYPTO006", "severity": "high"},
+    {"line": 25, "rule": "CRYPTO006", "severity": "high"},
+    {"line": 30, "rule": "CRYPTO006", "severity": "high"},
+    {"line": 35, "rule": "CRYPTO006", "severity": "high"}
+  ],
+  "must_be_empty_on_safe": true
+}
