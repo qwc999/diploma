@@ -1,0 +1,14 @@
+{
+  "case_id": "hardcoded_jwt_secret",
+  "rule_id": "CRYPTO007",
+  "description": "JWT signing secret is passed to PyJWT jwt.encode as a string or bytes literal. Six scenarios cover positional string, default-looking string, keyword key= string, module alias, direct function import and bytes literal.",
+  "must_be_empty_on_safe": true,
+  "findings": [
+    {"line": 17, "rule": "CRYPTO007", "severity": "high", "context": "jwt.encode with positional string literal secret"},
+    {"line": 22, "rule": "CRYPTO007", "severity": "high", "context": "jwt.encode with default-looking positional string literal"},
+    {"line": 27, "rule": "CRYPTO007", "severity": "high", "context": "jwt.encode with keyword key= string literal"},
+    {"line": 32, "rule": "CRYPTO007", "severity": "high", "context": "j.encode through import jwt as j with string literal"},
+    {"line": 37, "rule": "CRYPTO007", "severity": "high", "context": "encode through from jwt import encode with string literal"},
+    {"line": 42, "rule": "CRYPTO007", "severity": "high", "context": "encode alias with bytes literal secret"}
+  ]
+}
