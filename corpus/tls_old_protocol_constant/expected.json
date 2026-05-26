@@ -1,0 +1,12 @@
+{
+  "case_id": "tls_old_protocol_constant",
+  "rule_id": "CRYPTO008",
+  "description": "ssl.SSLContext is created with deprecated or insecure TLS/SSL protocol constants. Four scenarios cover import ssl, import ssl as alias, direct SSLContext/protocol imports and direct aliases.",
+  "must_be_empty_on_safe": true,
+  "findings": [
+    {"line": 11, "rule": "CRYPTO008", "severity": "high", "context": "ssl.SSLContext(ssl.PROTOCOL_TLSv1)"},
+    {"line": 16, "rule": "CRYPTO008", "severity": "high", "context": "s.SSLContext(s.PROTOCOL_TLSv1_1)"},
+    {"line": 21, "rule": "CRYPTO008", "severity": "high", "context": "SSLContext(PROTOCOL_SSLv23)"},
+    {"line": 26, "rule": "CRYPTO008", "severity": "high", "context": "TLSContext(SSL_V3)"}
+  ]
+}

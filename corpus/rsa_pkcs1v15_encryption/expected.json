@@ -1,0 +1,12 @@
+{
+  "case_id": "rsa_pkcs1v15_encryption",
+  "rule_id": "CRYPTO009",
+  "description": "RSA encryption/decryption with PKCS#1 v1.5 padding. Covers PyCA cryptography padding.PKCS1v15(), import alias and direct PKCS1v15 import, while allowing PKCS1v15 in sign/verify.",
+  "must_be_empty_on_safe": true,
+  "findings": [
+    {"line": 15, "rule": "CRYPTO009", "severity": "high", "context": "public_key.encrypt(..., padding.PKCS1v15())"},
+    {"line": 20, "rule": "CRYPTO009", "severity": "high", "context": "private_key.decrypt(..., padding.PKCS1v15())"},
+    {"line": 25, "rule": "CRYPTO009", "severity": "high", "context": "public_key.encrypt(..., asym_padding.PKCS1v15())"},
+    {"line": 30, "rule": "CRYPTO009", "severity": "high", "context": "private_key.decrypt(..., PKCS1v15())"}
+  ]
+}
